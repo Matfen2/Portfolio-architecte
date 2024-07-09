@@ -88,7 +88,7 @@ h1 > span {
 ;
 }
 
-h2{
+.designer {
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
@@ -144,13 +144,49 @@ li:hover {
 	margin-bottom: 1em;
 }
 
+.myProjets {
+	display: flex;
+	column-gap: 20px;
+  text-align: center;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.myWorks {
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 30px;
+	color: #1D6154
+}
+
+.modify {
+	margin-top: -35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modify i {
+	cursor: pointer;
+	font-size: 1.2em;
+  margin-right: 5px;
+	transition: all 0.3s ease;
+	&:hover {
+		transform: scale(1.1);
+	}
+}
+
+.modify p {
+	margin-left: 3px;
+}
+
 #connection {
 	width: 100%;
 	max-width: 400px;
 	padding: 20px;
 	top: 50%;
 	left: 50%;
-	margin-bottom: 358px;
+	margin-bottom: 368px;
 	position: relative;
 	transform: translate(-50%, 25%);
 	background-color: #fff;
@@ -158,6 +194,8 @@ li:hover {
 }
 
 .logIn {
+	font-size: 1.9em;
+	color: #1D6154;
 	font-family: 'Syne', sans-serif;
 	margin-bottom: 20px;
 }
@@ -182,7 +220,7 @@ li:hover {
 	flex-direction: column;
 }
 
-input[type="email"], input[type="password"] {
+#adress, #password {
 	width: 100%;
 	padding: 15px;
 	margin-top: 5px;
@@ -242,41 +280,43 @@ button#btnConnect:hover {
 }
 
 .btn-filter {
-    padding: 5px 20px;
-    font-size: 1.4em;
-    border-radius: 30px;
-		font-family: 'Syne';
-    border: 1px solid darkgreen;
-    background-color: #ffffff;
-    cursor: pointer; /* Ajouté pour montrer que c'est cliquable */
-    margin: 5px; /* Ajouté pour espacer les boutons */
+  padding: 5px 20px;
+  font-size: 1.4em;
+  border-radius: 30px;
+	font-family: 'Syne';
+  border: 1px solid darkgreen;
+  background-color: #ffffff;
+  cursor: pointer; 
+  margin: 5px;
 }
 
 .btn-filter:active {
-    background-color: darkgreen;
-    color: #ffffff; 
+  background-color: darkgreen;
+  color: #ffffff; 
 }
 
 .btn-filter.active {
-    background-color: darkgreen;
-    color: #ffffff; 
+  background-color: darkgreen;
+  color: #ffffff; 
 }
 
 .gallery img {
 	width: 100%;
-
 }
+
 #contact {
 	width: 50%;
-margin: auto;
+	margin: auto;
 }
+
 #contact > * {
 	text-align: center;
-
 }
+
 #contact h2{
 	margin-bottom: 20px;
 }
+
 #contact form {
 	text-align: left;
 	margin-top:30px;
@@ -290,9 +330,11 @@ margin: auto;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
+
 #contact label {
 	margin: 2em 0 1em 0;
 }
+
 #contact textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
@@ -314,4 +356,209 @@ footer nav ul {
 	justify-content: flex-end;
 	margin: 2em
 }
+
+/* Modal */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100vh;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  top: 50%;
+  left: 50%;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 617px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.close-modal,
+.back-modal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.back-modal {
+    right: auto;
+    left: 10px;
+}
+
+.gallery-title {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.8em;
+}
+
+#contentGallery {
+	padding: 20px;
+}
+
+#listGallery {
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+	margin: 30px auto;
+  justify-content: flex-start;
+  gap: 10px;
+	margin-left: 50px;
+}
+
+.photo-container {
+  position: relative;
+  display: inline-block;
+}
+
+.photo-container img {
+  height: 100px;
+  width: 80px;
+	padding: 10px 5px;
+  object-fit: cover;
+}
+
+.positionImage {
+	margin: 5px 15px;
+}
+
+.btn-delete {
+  position: absolute;
+  top: 14px;
+  right: 11px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: black;
+  border: none;
+  color: azure;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.fa-trash-can {
+  font-size: 0.8em;
+}
+
+.rowAdd {
+	width: 75%;
+	margin-top: -7px;
+}
+
+#btnAddPhotoView {
+	display: block;
+	color: #fff;
+	cursor: pointer;
+	font-size: 1.1em;
+	border-radius: 30px;
+	padding: 7px 50px;
+	margin: 35px auto;
+	border: none;
+	background-color: #1D6154;
+}
+
+/* Ajouter Photo */
+#btnBackToGallery {
+	font-size: 1.4em;
+	margin-left: 10px;
+}
+
+#contentAdd {
+	margin-top: 40px;
+}
+
+.upload-placeholder {
+	width: 70%;
+	display: block;
+  text-align: center;
+  padding: 20px;
+  margin: 27px auto;
+	border-radius: 5px;
+	background-color: #c9c9c9;
+}
+
+.upload-placeholder .placeholder-icon {
+	color: #8d8d8d;
+  font-size: 6.0em;
+}
+
+.upload-placeholder button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 40px;
+    border: none;
+    background: #8d8d8d;
+    color: white;
+    cursor: pointer;
+    border-radius: 30px;
+}
+
+.upload-text {
+	font-weight: bold;
+	color: #0635a9;
+	font-size: 1.2em;
+}
+
+.typePhoto {
+	font-size: 0.8em;
+}
+
+#postPhoto {
+	top: 50%;
+	left: 12%;
+	position: relative;
+	display: block;
+	margin: auto;
+	justify-content: center;
+}
+
+.photoTitle,
+.photoCategory {
+	width: 71%;
+	margin-bottom: 20px;
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+}
+
+#title, #category {
+	width: 100%;
+	padding: 15px;
+	margin: 5px auto;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+.rowValid {
+	width: 75%;
+	margin-top: 40px;
+}
+
+#btnValidPhoto {
+	display: block;
+	color: #fff;
+	cursor: pointer;
+	font-size: 1.1em;
+	border: none;
+	border-radius: 30px;
+	padding: 8px 90px;
+	margin: 35px auto;
+	background-color: #8d8d8d;
+}
+
+
 

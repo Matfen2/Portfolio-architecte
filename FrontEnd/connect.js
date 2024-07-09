@@ -1,7 +1,7 @@
 document.getElementById('logForm').addEventListener('submit', function(event) {
   event.preventDefault(); // Empêcher l'envoi du formulaire par défaut
 
-  const email = document.getElementById('email').value.trim();
+  const email = document.getElementById('adress').value.trim();
   const password = document.getElementById('password').value.trim();
 
   // Validation côté client (vous pouvez ajouter plus de validations selon vos besoins)
