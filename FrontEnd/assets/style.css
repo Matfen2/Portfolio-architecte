@@ -96,6 +96,7 @@ h1 > span {
 }
 
 nav ul {
+	column-gap: 30px;
 	display: flex;
 	align-items: center;
 	list-style-type: none;
@@ -315,11 +316,15 @@ button#btnConnect:hover {
 
 #contact h2{
 	margin-bottom: 20px;
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 30px;
+	color: #1D6154
 }
 
 #contact form {
 	text-align: left;
-	margin-top:30px;
+	margin-top: 16px;
 	display: flex;
 	flex-direction: column;
 }
@@ -497,14 +502,14 @@ footer nav ul {
 }
 
 .upload-placeholder button {
-    display: block;
-    margin: 10px auto;
-    padding: 10px 40px;
-    border: none;
-    background: #8d8d8d;
-    color: white;
-    cursor: pointer;
-    border-radius: 30px;
+  display: block;
+  margin: 10px auto;
+  padding: 10px 40px;
+  border: none;
+  background: #8d8d8d;
+  color: white;
+  cursor: pointer;
+  border-radius: 30px;
 }
 
 .upload-text {
