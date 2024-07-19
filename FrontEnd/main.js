@@ -10,7 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeShow = document.getElementById('btnCloseModal');
     const closeShow2 = document.getElementById('btnCloseModal2');
     const backToGallery = document.getElementById('btnBackToGallery');
-    const token = "eagle2077";
+    const btnValidPhoto = document.getElementById('btnValidPhoto');
+    const token = "testApi2024";
+    const postPhotoForm = document.getElementById('postPhoto');
+    const errorMessage = document.createElement('p');
+    errorMessage.style.color = 'red';
+    errorMessage.style.display = 'none';
+    showPhoto.appendChild(errorMessage);
 
     let projects = [];
 
@@ -34,13 +40,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     photoArchitecte();
 
+    function displayProjects(projects) {
+        gallery.innerHTML = '';
+        projects.forEach(project => {
+            const projectElement = createProjectElement(project);
+            gallery.appendChild(projectElement);
+        });
+    }
+
     // Création des boutons catégories dans la page index.html
     function createCategoryButtons(categories) {
         const allButton = document.createElement('button');
         allButton.type = 'button';
         allButton.className = 'btn-filter active';
         allButton.textContent = 'Tous';
-        allButton.addEventListener('click', () => filterProjectsByCategory(null));
+        allButton.addEventListener('click', () => filterProjectsByCategory());
         categoryButtonsContainer.appendChild(allButton);
 
         categories.forEach(category => {
@@ -65,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         displayProjects(filteredProjects);
     }
 
+    // Modal
     openModal.addEventListener('click', function () {
         showModal.style.display = "flex";
     });
@@ -78,18 +93,31 @@ document.addEventListener('DOMContentLoaded', () => {
         showModal.style.display = "none";
         document.getElementById('galleryView').style.display = 'block';
         showPhoto.style.display = "none";
+        errorMessage.style.display = 'none';
     });
 
     closeShow2.addEventListener('click', function () {
         showPhoto.style.display = "none";
         document.getElementById('galleryView').style.display = 'block';
-        showPhoto.style.display = "none";
+        errorMessage.style.display = 'none';
     });
 
     backToGallery.addEventListener('click', function () {
         showPhoto.style.display = 'none';
         document.getElementById('galleryView').style.display = 'block';
+        errorMessage.style.display = 'none';
     });
+
+    function closeModalOnOutsideClick(event) {
+        if (event.target === showModal) {
+            showModal.style.display = "none";
+            document.getElementById('galleryView').style.display = 'block';
+            showPhoto.style.display = "none";
+            errorMessage.style.display = 'none';
+        }
+    }
+
+    window.addEventListener('click', closeModalOnOutsideClick);
 
     function createProjectElement(project) {
         const figure = document.createElement('figure');
@@ -104,14 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         figure.appendChild(figcaption);
 
         return figure;
-    }
-
-    function displayProjects(projects) {
-        gallery.innerHTML = '';
-        projects.forEach(project => {
-            const projectElement = createProjectElement(project);
-            gallery.appendChild(projectElement);
-        });
     }
 
     function createPhotoElement(project) {
@@ -185,6 +205,54 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('photoInput').addEventListener('change', function () {
         const fileName = this.files[0].name;
         document.querySelector('.upload-text').textContent = fileName;
+    });
+
+    btnValidPhoto.addEventListener('click', async function () {
+        const formData = new FormData(postPhotoForm);
+        const fileInput = document.getElementById('photoInput');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            errorMessage.textContent = "Veuillez ajouter une photo.";
+            errorMessage.style.display = 'block';
+            return;
+        }
+
+        formData.append('image', file);
+
+        try {
+            const response = await fetch(apiURL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorDetails = await response.json();
+                errorMessage.textContent = `Erreur : ${errorDetails.message}`;
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const newProject = await response.json();
+            projects.push(newProject);
+
+            displayProjects(projects);
+            displayPhotos(projects);
+
+            showPhoto.style.display = 'none';
+            document.getElementById('galleryView').style.display = 'block';
+            showModal.style.display = "none";
+
+            fileInput.value = '';
+            postPhotoForm.reset();
+            errorMessage.style.display = 'none';
+        } catch (error) {
+            errorMessage.textContent = `Erreur : ${error.message}`;
+            errorMessage.style.display = 'block';
+        }
     });
 
     function displayPhotos(projects) {
