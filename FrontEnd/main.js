@@ -1,8 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const token = "testApi2024";
     const apiURL = 'http://localhost:5678/api/works';
+    
+    // Elements Gallery
     const gallery = document.querySelector('.gallery');
     const categoryButtonsContainer = document.getElementById('category-buttons');
     const listGallery = document.getElementById('listGallery');
+
+    // Elements Modals
     const openModal = document.querySelector('.open-modal');
     const showModal = document.getElementById('photoModal');
     const showPhoto = document.getElementById('addPhotoView');
@@ -11,9 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeShow2 = document.getElementById('btnCloseModal2');
     const backToGallery = document.getElementById('btnBackToGallery');
     const btnValidPhoto = document.getElementById('btnValidPhoto');
-    const token = "testApi2024";
     const postPhotoForm = document.getElementById('postPhoto');
     const errorMessage = document.createElement('p');
+    const imageInput = document.getElementById('photoInput');
+    
     errorMessage.style.color = 'red';
     errorMessage.style.display = 'none';
     showPhoto.appendChild(errorMessage);
@@ -46,6 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const projectElement = createProjectElement(project);
             gallery.appendChild(projectElement);
         });
+    }
+
+    function createProjectElement(project) {
+        const figure = document.createElement('figure');
+
+        const img = document.createElement('img');
+        img.src = project.imageUrl;
+        img.alt = project.title;
+        figure.appendChild(img);
+
+        const figcaption = document.createElement('figcaption');
+        figcaption.textContent = project.title;
+        figure.appendChild(figcaption);
+
+        return figure;
     }
 
     // Création des boutons catégories dans la page index.html
@@ -119,21 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('click', closeModalOnOutsideClick);
 
-    function createProjectElement(project) {
-        const figure = document.createElement('figure');
-
-        const img = document.createElement('img');
-        img.src = project.imageUrl;
-        img.alt = project.title;
-        figure.appendChild(img);
-
-        const figcaption = document.createElement('figcaption');
-        figcaption.textContent = project.title;
-        figure.appendChild(figcaption);
-
-        return figure;
-    }
-
+    // VOIR LES PHOTOS DANS LE MODAL 1
     function createPhotoElement(project) {
         const photoContainer = document.createElement('div');
         photoContainer.className = 'photo-container';
@@ -154,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return photoContainer;
     }
 
+    // SUPPRIMER LES PHOTOS DANS LE MODAL 1 ET DANS LA PAGE INDEX.HTML
     async function deletePhoto(photoId) {
         try {
             console.log(`Tentative de suppression de la photo avec l'ID: ${photoId}`);
@@ -193,65 +201,82 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document.getElementById('btnAddPhotoView').addEventListener('click', function () {
-        document.getElementById('galleryView').style.display = 'none';
-        document.getElementById('addPhotoView').style.display = 'block';
-    });
+    function resetForm() {
+        postPhotoForm.reset();
+        document.querySelector('.upload-text').textContent = "+ Ajouter photo";
+        errorMessage.style.display = 'none';
+    }
 
-    document.getElementById('getPhoto').addEventListener('click', function () {
-        document.getElementById('photoInput').click();
-    });
+    function resetModal() {
+        document.getElementById('galleryView').style.display = 'block';
+        showPhoto.style.display = 'none';
+        errorMessage.style.display = 'none';
+    }
 
-    document.getElementById('photoInput').addEventListener('change', function () {
-        const fileName = this.files[0].name;
-        document.querySelector('.upload-text').textContent = fileName;
-    });
+    async function fetchData() {
+        await photoArchitecte();
+    }
 
-    btnValidPhoto.addEventListener('click', async function () {
-        const formData = new FormData(postPhotoForm);
+    function closeModal() {
+        showModal.style.display = 'none';
+    }
+
+    // Gestion de la soumission du formulaire pour ajouter une nouvelle photo
+    postPhotoForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        // Récupérer les valeurs du formulaire
+        const title = document.getElementById("title").value;
+        const categorySelect = document.getElementById("category");
+        const categoryId = categorySelect.options[categorySelect.selectedIndex].dataset.id;
         const fileInput = document.getElementById('photoInput');
         const file = fileInput.files[0];
-        
-        if (!file) {
-            errorMessage.textContent = "Veuillez ajouter une photo.";
-            errorMessage.style.display = 'block';
+
+        // Vérifier que les champs sont remplis 
+        if (!fileInput.files.length) {
+            alert("Veuillez sélectionner une photo.");
+            return;
+        }
+        if (!title) {
+            alert("Veuillez entrer un titre.");
+            return;
+        }
+        if (!categoryId) {
+            alert("Veuillez choisir une catégorie.");
             return;
         }
 
-        formData.append('image', file);
+        const formData = new FormData();
+        formData.append("image", file, file.name);
+        formData.append("title", title);
+        formData.append("category", categoryId);
 
         try {
             const response = await fetch(apiURL, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    "Authorization": `Bearer ${token}`
                 },
                 body: formData
             });
 
-            if (!response.ok) {
-                const errorDetails = await response.json();
-                errorMessage.textContent = `Erreur : ${errorDetails.message}`;
-                errorMessage.style.display = 'block';
-                return;
+            if (response.ok) {
+                const newProject = await response.json();
+                projects.push(newProject);
+
+                displayProjects(projects);
+                displayPhotos(projects);
+
+                resetModal();
+                resetForm();
+                closeModal(event);
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message || "Une erreur est survenue lors de l'ajout de la photo.");
             }
-
-            const newProject = await response.json();
-            projects.push(newProject);
-
-            displayProjects(projects);
-            displayPhotos(projects);
-
-            showPhoto.style.display = 'none';
-            document.getElementById('galleryView').style.display = 'block';
-            showModal.style.display = "none";
-
-            fileInput.value = '';
-            postPhotoForm.reset();
-            errorMessage.style.display = 'none';
         } catch (error) {
-            errorMessage.textContent = `Erreur : ${error.message}`;
-            errorMessage.style.display = 'block';
+            console.error("Erreur lors de l'envoi de la requête :", error);
+            alert("Une erreur est survenue lors de l'envoi de la photo.");
         }
     });
 
