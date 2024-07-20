@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const token = "testApi2024";
+    const token = "testApi2024"; // Utilisez le token que vous avez fourni
     const apiURL = 'http://localhost:5678/api/works';
     
     // Elements Gallery
@@ -15,27 +15,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeShow = document.getElementById('btnCloseModal');
     const closeShow2 = document.getElementById('btnCloseModal2');
     const backToGallery = document.getElementById('btnBackToGallery');
-    const btnValidPhoto = document.getElementById('btnValidPhoto');
     const postPhotoForm = document.getElementById('postPhoto');
-    const errorMessage = document.createElement('p');
     const imageInput = document.getElementById('photoInput');
+    const btnValidPhoto = document.getElementById('btnValidPhoto');
     
-    errorMessage.style.color = 'red';
-    errorMessage.style.display = 'none';
-    showPhoto.appendChild(errorMessage);
-
     let projects = [];
 
-    // Afficher les projets Architectes dans la page index.html
-    async function photoArchitecte() {
+    // MODAL
+    //Part 1 : Ouvrir le Modal 
+    openModal.addEventListener('click', function () {
+        showModal.style.display = "flex";
+    });
+
+    btnPhoto.addEventListener('click', function () {
+        document.getElementById('galleryView').style.display = 'none';
+        showPhoto.style.display = "block";
+    });
+
+    //Part 2 : Fermer le modal via le bouton "btnClose"
+    closeShow.addEventListener('click', function () {
+        showModal.style.display = "none";
+        document.getElementById('galleryView').style.display = 'block';
+        showPhoto.style.display = "none";
+    });
+
+    closeShow2.addEventListener('click', function () {
+        showPhoto.style.display = "none";
+        document.getElementById('galleryView').style.display = 'block';
+    });
+    
+    //Part 3 : Fermer le modal en dehors des boutons "btnClose"
+    function closeModalOnOutsideClick(event) {
+        if (event.target === showModal) {
+            showModal.style.display = "none";
+            document.getElementById('galleryView').style.display = 'block';
+            showPhoto.style.display = "none";
+        }
+    }
+
+    window.addEventListener('click', closeModalOnOutsideClick);
+
+    // Part 4 : Revenir au 1er Modal à partir du 2ème Modal
+    backToGallery.addEventListener('click', function () {
+        showPhoto.style.display = 'none';
+        document.getElementById('galleryView').style.display = 'block';
+    });
+
+    // Gallery
+    // Part 1 : Récupérer les infos de la base de données
+    async function fetchProjects() {
         try {
             const response = await fetch(apiURL);
             const data = await response.json();
             projects = data;
 
+            // Technique Array.Map() permet de récupérer les élements spécifiques de la base de données
             const categorySet = new Set(projects.map(project => project.category.name));
+
+            // Création d'un tableau basé uniquement sur les catégories
             const categories = Array.from(categorySet);
 
+            // Appels des fonctions
             createCategoryButtons(categories);
             displayProjects(projects);
             displayPhotos(projects);
@@ -44,8 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    photoArchitecte();
+    fetchProjects();
 
+    // Fonctions permettant d'ajouter chaque élement (forEach) de works dans la section gallery
     function displayProjects(projects) {
         gallery.innerHTML = '';
         projects.forEach(project => {
@@ -56,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createProjectElement(project) {
         const figure = document.createElement('figure');
+        figure.setAttribute('id', `project-${project.id}`);
 
         const img = document.createElement('img');
         img.src = project.imageUrl;
@@ -69,13 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return figure;
     }
 
-    // Création des boutons catégories dans la page index.html
+    // Part 2 : Filter les catégories des works
+    // Fonction qui créer des boutons de chaque catégorie
     function createCategoryButtons(categories) {
         const allButton = document.createElement('button');
         allButton.type = 'button';
         allButton.className = 'btn-filter active';
         allButton.textContent = 'Tous';
-        allButton.addEventListener('click', () => filterProjectsByCategory());
+        allButton.addEventListener('click', () => filterProjectsByCategory(null));
         categoryButtonsContainer.appendChild(allButton);
 
         categories.forEach(category => {
@@ -88,69 +131,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Créations du filtrage des boutons catégories
+    // Fonction permettant de filter les éléments catégories des works à chaque boutons
     function filterProjectsByCategory(categoryName) {
         const buttons = document.querySelectorAll('.btn-filter');
         buttons.forEach(button => button.classList.remove('active'));
 
+        // La technique Array.find() permet de récupérer le premier éléments du tableau 
         const activeButton = categoryName === null ? buttons[0] : Array.from(buttons).find(button => button.textContent === categoryName);
         activeButton.classList.add('active');
 
+        // La technique Array.find() permet de créer le tableau avec des éléments spécifiques
         const filteredProjects = categoryName === null ? projects : projects.filter(project => project.category.name === categoryName);
+
         displayProjects(filteredProjects);
     }
 
-    // Modal
-    openModal.addEventListener('click', function () {
-        showModal.style.display = "flex";
-    });
-
-    btnPhoto.addEventListener('click', function () {
-        document.getElementById('galleryView').style.display = 'none';
-        showPhoto.style.display = "block";
-    });
-
-    closeShow.addEventListener('click', function () {
-        showModal.style.display = "none";
-        document.getElementById('galleryView').style.display = 'block';
-        showPhoto.style.display = "none";
-        errorMessage.style.display = 'none';
-    });
-
-    closeShow2.addEventListener('click', function () {
-        showPhoto.style.display = "none";
-        document.getElementById('galleryView').style.display = 'block';
-        errorMessage.style.display = 'none';
-    });
-
-    backToGallery.addEventListener('click', function () {
-        showPhoto.style.display = 'none';
-        document.getElementById('galleryView').style.display = 'block';
-        errorMessage.style.display = 'none';
-    });
-
-    function closeModalOnOutsideClick(event) {
-        if (event.target === showModal) {
-            showModal.style.display = "none";
-            document.getElementById('galleryView').style.display = 'block';
-            showPhoto.style.display = "none";
-            errorMessage.style.display = 'none';
-        }
-    }
-
-    window.addEventListener('click', closeModalOnOutsideClick);
-
-    // VOIR LES PHOTOS DANS LE MODAL 1
+    // CONTENU DU MODAL
+    // Part 1 : Création du contenu dans le modal (#photoModal)
     function createPhotoElement(project) {
         const photoContainer = document.createElement('div');
         photoContainer.className = 'photo-container';
+        photoContainer.setAttribute('id', `photo-${project.id}`);
 
+        // Création des images
         const img = document.createElement('img');
         img.src = project.imageUrl;
         img.alt = project.title;
         img.className = 'photoArchitecture';
         photoContainer.appendChild(img);
 
+        // Création des boutons corbeilles à chaque photo
         const btnDelete = document.createElement('button');
         btnDelete.type = 'button';
         btnDelete.className = 'btn-delete';
@@ -161,11 +171,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return photoContainer;
     }
 
-    // SUPPRIMER LES PHOTOS DANS LE MODAL 1 ET DANS LA PAGE INDEX.HTML
+    function displayPhotos(projects) {
+        listGallery.innerHTML = '';
+        let row;
+        // Pour chaque work
+        projects.forEach((project, index) => {
+            if (index % 5 === 0) {
+                row = document.createElement('div');
+                row.className = 'row';
+                listGallery.appendChild(row);
+            }
+            const photoElement = createPhotoElement(project);
+            row.appendChild(photoElement);
+        });
+    }
+
+    // Part 2 : Supprimer les élements dans le modal (#photoModal)
     async function deletePhoto(photoId) {
         try {
-            console.log(`Tentative de suppression de la photo avec l'ID: ${photoId}`);
-
+            // Requete DELETE
             const response = await fetch(`http://localhost:5678/api/works/${photoId}`, {
                 method: 'DELETE',
                 headers: {
@@ -173,11 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Authorization': `Bearer ${token}`
                 }
             });
-
-            if (!response.ok) {
-                const errorDetails = await response.json();
-                console.error('Détails de l\'erreur:', errorDetails);
-            }
 
             const projectIndex = projects.findIndex(project => project.id === photoId);
             if (projectIndex !== -1) {
@@ -195,66 +214,31 @@ document.addEventListener('DOMContentLoaded', () => {
             if (photoElement) {
                 photoElement.remove();
             }
-            console.log(`Photo avec l'ID: ${photoId} a été supprimée`);
         } catch (error) {
             console.error('Erreur lors de la suppression de la photo:', error);
         }
     }
 
-    function resetForm() {
-        postPhotoForm.reset();
-        document.querySelector('.upload-text').textContent = "+ Ajouter photo";
-        errorMessage.style.display = 'none';
-    }
-
-    function resetModal() {
-        document.getElementById('galleryView').style.display = 'block';
-        showPhoto.style.display = 'none';
-        errorMessage.style.display = 'none';
-    }
-
-    async function fetchData() {
-        await photoArchitecte();
-    }
-
-    function closeModal() {
-        showModal.style.display = 'none';
-    }
-
-    // Gestion de la soumission du formulaire pour ajouter une nouvelle photo
-    postPhotoForm.addEventListener("submit", async function(event) {
+    // Part 3 : Ajouter les éléments dans le modal (#photoModal) et dans la page index.html depuis le modal (#addPhoto)
+    postPhotoForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        // Récupérer les valeurs du formulaire
-        const title = document.getElementById("title").value;
-        const categorySelect = document.getElementById("category");
-        const categoryId = categorySelect.options[categorySelect.selectedIndex].dataset.id;
-        const fileInput = document.getElementById('photoInput');
-        const file = fileInput.files[0];
+        const title = document.getElementById('title').value.trim();
+        const category = document.getElementById('category').value.trim();
+        const imageInput = document.getElementById('photoInput');
 
-        // Vérifier que les champs sont remplis 
-        if (!fileInput.files.length) {
-            alert("Veuillez sélectionner une photo.");
-            return;
-        }
-        if (!title) {
-            alert("Veuillez entrer un titre.");
-            return;
-        }
-        if (!categoryId) {
-            alert("Veuillez choisir une catégorie.");
-            return;
-        }
+        const file = imageInput.files[0];
 
         const formData = new FormData();
-        formData.append("image", file, file.name);
+        formData.append("image", file);
         formData.append("title", title);
-        formData.append("category", categoryId);
+        formData.append("category", category);
 
         try {
             const response = await fetch(apiURL, {
                 method: "POST",
                 headers: {
+                    'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`
                 },
                 body: formData
@@ -264,12 +248,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newProject = await response.json();
                 projects.push(newProject);
 
-                displayProjects(projects);
-                displayPhotos(projects);
+                addProjectToGallery(newProject);
 
                 resetModal();
-                resetForm();
-                closeModal(event);
+                postPhotoForm.reset();
+
+                alert("Ajout d'un nouveau projet réussi");
             } else {
                 const errorData = await response.json();
                 alert(errorData.message || "Une erreur est survenue lors de l'ajout de la photo.");
@@ -280,22 +264,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function displayPhotos(projects) {
-        listGallery.innerHTML = '';
-        let row;
-        projects.forEach((project, index) => {
-            if (index % 5 === 0) {
-                row = document.createElement('div');
-                row.className = 'row';
-                listGallery.appendChild(row);
-            }
-            const photoElement = createPhotoElement(project);
-            row.appendChild(photoElement);
-        });
+    function addProjectToGallery(project) {
+        const projectElement = createProjectElement(project);
+        gallery.appendChild(projectElement);
 
-        const lastRow = listGallery.lastElementChild;
-        if (lastRow && lastRow.childElementCount < 5) {
-            lastRow.style.justifyContent = 'flex-start';
-        }
+        const photoElement = createPhotoElement(project);
+        listGallery.appendChild(photoElement);
     }
+
+    document.getElementById('getPhoto').addEventListener('click', function () {
+         imageInput.addEventListener('click', function () {
+        const fileName = this.files[0].name;
+        document.querySelector('.upload-text').textContent = fileName;
+    });
+    });  
 });
