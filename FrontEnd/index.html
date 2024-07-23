@@ -81,62 +81,6 @@
 		</nav>
 	</footer>
 
-	<!-- Modal -->
-	<!-- Photo Architecture -->
-	<aside class="modal" id="photoModal" aria-hidden="true" style="display: none;">
-		<div class="modal-content">
-			<div id="galleryView" class="modal-view active">
-				<button type="button" id="btnCloseModal" class="close-modal" aria-label="Close">
-					<i class="fa-solid fa-xmark"></i>
-				</button>
-				<div class="modal-body" id="contentGallery">
-					<h2 class="gallery-title">Galerie photo</h2>
-					<div class="gallery-content">
-						<div class="row" id="listGallery">
-							<!-- Les projets seront ajoutés ici via JavaScript -->
-						</div>
-					</div>
-				</div>
-				<hr class="rowAdd">
-				<button type="button" id="btnAddPhotoView" class="btn btn-primary">Ajouter une photo</button>
-			</div>
-			<div id="addPhotoView" class="modal-view" style="display: none;">
-				<div class="listBtnModal">
-					<button type="button" id="btnBackToGallery" class="back-modal" aria-label="Back">
-						<i class="fa-solid fa-arrow-left"></i>
-					</button>
-					<button type="button" id="btnCloseModal2" class="close-modal" aria-label="Close">
-						<i class="fa-solid fa-xmark"></i>
-					</button>
-				</div>
-				<!-- Ajout des photos -->
-				<div class="modal-body" id="contentAdd">
-					<h2 class="gallery-title">Ajout photo</h2>
-					<div class="upload-placeholder">
-						<i class="fa fa-image placeholder-icon"></i>
-						<button type="button" id="getPhoto">
-							<span class="upload-text">+ Ajouter photo</span>
-						</button>
-						<input type="file" id="photoInput" accept="image/jpeg, image/png" style="display: none;" />
-						<small class="typePhoto">jpg, png : 4mo max</small>
-					</div>
-					<form id="postPhoto">
-						<div class="photoTitle">
-							<label for="title">Titre</label>
-							<input type="text" name="title" id="title" required />
-						</div>
-						<div class="photoCategory">
-							<label for="category">Catégorie</label>
-							<input type="text" name="category" id="category" required />
-						</div>
-					</form>
-				</div>
-				<hr class="rowValid">
-				<button type="submit" id="btnValidPhoto" class="btn btn-primary">Valider</button>
-			</div>
-		</div>
-	</aside>
-
 	<script src="main.js"></script>
 </body>
 

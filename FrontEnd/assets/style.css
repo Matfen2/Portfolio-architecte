@@ -477,93 +477,74 @@ footer nav ul {
 }
 
 /* Ajouter Photo */
-#btnBackToGallery {
-	font-size: 1.4em;
-	margin-left: 10px;
-}
-
-#contentAdd {
-	margin-top: 40px;
-}
-
 .upload-placeholder {
-	width: 70%;
-	display: block;
-  text-align: center;
-  padding: 20px;
-  margin: 27px auto;
-	border-radius: 5px;
-	background-color: #c9c9c9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.upload-placeholder .placeholder-icon {
-	color: #8d8d8d;
-  font-size: 6.0em;
+.upload-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
 }
 
-.upload-placeholder button {
-  display: block;
-  margin: 10px auto;
-  padding: 10px 40px;
-  border: none;
-  background: #8d8d8d;
-  color: white;
-  cursor: pointer;
-  border-radius: 30px;
+.upload-button .upload-text {
+    margin-left: 10px;
 }
 
-.upload-text {
-	font-weight: bold;
-	color: #0635a9;
-	font-size: 1.2em;
+.photo-preview {
+    margin-bottom: 20px;
 }
 
-.typePhoto {
-	font-size: 0.8em;
+.photo-preview img {
+    border-radius: 5px;
 }
 
-#postPhoto {
-	top: 50%;
-	left: 12%;
-	position: relative;
-	display: block;
-	margin: auto;
-	justify-content: center;
+.add-photo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.photoTitle,
-.photoCategory {
-	width: 71%;
-	margin-bottom: 20px;
-	text-align: left;
-	display: flex;
-	flex-direction: column;
+.add-photo-form .photoTitle, .add-photo-form .photoCategory {
+    display: flex;
+    flex-direction: column;
 }
 
-#title, #category {
-	width: 100%;
-	padding: 15px;
-	margin: 5px auto;
-	border: 1px solid #ccc;
-	border-radius: 5px;
+.add-photo-form label {
+    margin-bottom: 5px;
+}
+
+.add-photo-form input, .add-photo-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 .rowValid {
-	width: 75%;
-	margin-top: 40px;
+    margin: 20px 0;
 }
 
-#btnValidPhoto {
-	display: block;
-	color: #fff;
-	cursor: pointer;
-	font-size: 1.1em;
-	border: none;
-	border-radius: 30px;
-	padding: 8px 90px;
-	margin: 35px auto;
-	background-color: #8d8d8d;
+.btn-primary {
+    padding: 10px 20px;
+    background-color: #2d2d2d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
+
+.btn-primary:hover {
+    background-color: #3d3d3d;
+}
+
+
 
 
 
