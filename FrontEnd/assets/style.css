@@ -302,6 +302,7 @@ button#btnConnect:hover {
 }
 
 .gallery img {
+	height: 450px;
 	width: 100%;
 }
 

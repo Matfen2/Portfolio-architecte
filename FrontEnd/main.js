@@ -65,10 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <!-- Options will be populated dynamically -->
                                     </select>
                                 </div>
+                                <button type="submit" id="btnValidPhoto" class="btn btn-primary">Valider</button>
                             </form>
                         </div>
-                        <hr class="rowValid">
-                        <button type="submit" id="btnValidPhoto" class="btn btn-primary">Valider</button>
                     </div>
                 </div>
             </aside>
@@ -141,16 +140,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        document.getElementById('btnValidPhoto').addEventListener('click', async function () {
-            postPhotoForm.submit();
-        });
-
         postPhotoForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
             const title = document.getElementById('title').value.trim();
             const category = document.getElementById('pet-select').value;
             const file = imageInput.files[0];
+
+            if (!file) {
+                alert("Veuillez sélectionner une image.");
+                return;
+            }
 
             const formData = new FormData();
             formData.append("image", file);
@@ -227,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             displayProjects(projects);
             displayPhotosInModal(projects);
+            attachDeleteEventListeners();
         } catch (error) {
             console.error('Erreur lors de la récupération des projets :', error);
         }
@@ -263,11 +264,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = document.createElement('img');
         img.src = project.imageUrl;
         img.alt = project.title;
+        img.classList.add('gallery-image');  // Ajout de classe pour uniformiser la hauteur
         figure.appendChild(img);
 
         const figcaption = document.createElement('figcaption');
         figcaption.textContent = project.title;
         figure.appendChild(figcaption);
+
+        const btnDelete = document.createElement('button');
+        btnDelete.type = 'button';
+        btnDelete.className = 'btn-delete';
+        btnDelete.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+        btnDelete.addEventListener('click', () => deletePhoto(project.id));
+        figure.appendChild(btnDelete);
 
         return figure;
     }
@@ -286,7 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
             button.type = 'button';
             button.className = 'btn-filter';
             button.textContent = category.name;
-            button.addEventListener('click', () => filterProjectsByCategory(category.name));
+            button.dataset.id = category.id;
+            button.addEventListener('click', () => filterProjectsByCategory(category.id));
             categoryButtonsContainer.appendChild(button);
         });
     }
@@ -302,16 +312,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function filterProjectsByCategory(categoryName) {
+    function filterProjectsByCategory(categoryId) {
         const buttons = document.querySelectorAll('.btn-filter');
         buttons.forEach(button => button.classList.remove('active'));
 
-        const activeButton = categoryName === null ? buttons[0] : Array.from(buttons).find(button => button.textContent === categoryName);
-        activeButton.classList.add('active');
+        const activeButton = categoryId === null ? buttons[0] : Array.from(buttons).find(button => button.dataset.id == categoryId);
+        if (activeButton) activeButton.classList.add('active');
 
-        const filteredProjects = categoryName === null ? projects : projects.filter(project => project.category.name === categoryName);
+        const filteredProjects = categoryId === null ? projects : projects.filter(project => project.categoryId == categoryId);
 
         displayProjects(filteredProjects);
+        attachDeleteEventListeners();  // Re-attach event listeners to delete buttons
     }
 
     function createPhotoElement(project) {
@@ -350,6 +361,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function attachDeleteEventListeners() {
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+        deleteButtons.forEach(button => {
+            const projectId = button.parentElement.id.split('-')[1];
+            button.addEventListener('click', () => deletePhoto(projectId));
+        });
+    }
+
     async function deletePhoto(photoId) {
         try {
             const response = await fetch(`http://localhost:5678/api/works/${photoId}`, {
@@ -365,8 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (projectIndex !== -1) {
                     projects.splice(projectIndex, 1);
                 }
-                displayProjects(projects);
-                displayPhotosInModal(projects);
 
                 const projectElement = document.getElementById(`project-${photoId}`);
                 if (projectElement) {
@@ -390,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery.appendChild(projectElement);
 
         addPhotoToModal(project);
+        attachDeleteEventListeners();
     }
 
     function addPhotoToModal(project) {
