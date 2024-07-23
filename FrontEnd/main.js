@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiURL = 'http://localhost:5678/api/works';
     const apiCategoriesURL = 'http://localhost:5678/api/categories';
 
-    // Elements Gallery
     const gallery = document.querySelector('.gallery');
     const categoryButtonsContainer = document.getElementById('category-buttons');
     const openModal = document.querySelector('.open-modal');
@@ -11,9 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let projects = [];
     let categories = [];
 
-    // Vérifier si l'utilisateur est connecté
     if (token) {
-        // Charger le HTML de la popup d'ajout de photo
         loadPhotoModalHTML();
     }
 
@@ -45,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
-                        <!-- Ajout des photos -->
                         <div class="modal-body" id="contentAdd">
                             <h2 class="gallery-title">Ajout photo</h2>
                             <div class="upload-placeholder">
@@ -65,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                                 <div class="photoCategory">
                                     <label for="category">Catégorie</label>
-                                    <select name="category" id="pet-select">
+                                    <select name="category" id="pet-select" required>
                                         <!-- Options will be populated dynamically -->
                                     </select>
                                 </div>
@@ -94,43 +90,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const photoPreview = document.getElementById('photoPreview');
         const photoPreviewImg = document.getElementById('photoPreviewImg');
 
-        openModal.addEventListener('click', function () {
+        openModal.addEventListener('click', () => {
             showModal.style.display = "flex";
         });
 
-        btnPhoto.addEventListener('click', function () {
+        btnPhoto.addEventListener('click', () => {
             document.getElementById('galleryView').style.display = 'none';
             showPhoto.style.display = "block";
         });
 
-        closeShow.addEventListener('click', function () {
+        closeShow.addEventListener('click', () => {
             showModal.style.display = "none";
             document.getElementById('galleryView').style.display = 'block';
             showPhoto.style.display = "none";
         });
 
-        closeShow2.addEventListener('click', function () {
+        closeShow2.addEventListener('click', () => {
             showPhoto.style.display = "none";
             showModal.style.display = "none";
             document.getElementById('galleryView').style.display = 'block';
         });
 
-        function closeModalOnOutsideClick(event) {
+        window.addEventListener('click', event => {
             if (event.target === showModal) {
                 showModal.style.display = "none";
                 document.getElementById('galleryView').style.display = 'block';
                 showPhoto.style.display = "none";
             }
-        }
+        });
 
-        window.addEventListener('click', closeModalOnOutsideClick);
-
-        backToGallery.addEventListener('click', function () {
+        backToGallery.addEventListener('click', () => {
             showPhoto.style.display = 'none';
             document.getElementById('galleryView').style.display = 'block';
         });
 
-        document.getElementById('getPhoto').addEventListener('click', function () {
+        document.getElementById('getPhoto').addEventListener('click', () => {
             imageInput.click();
         });
 
@@ -145,6 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 reader.readAsDataURL(file);
                 document.querySelector('.upload-text').textContent = file.name;
             }
+        });
+
+        document.getElementById('btnValidPhoto').addEventListener('click', async function () {
+            postPhotoForm.submit();
         });
 
         postPhotoForm.addEventListener('submit', async function (event) {
@@ -171,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     const newProject = await response.json();
                     projects.push(newProject);
-                    localStorage.setItem('projects', JSON.stringify(projects)); // Mise à jour du localStorage
+                    localStorage.setItem('projects', JSON.stringify(projects));
 
                     addProjectToGallery(newProject);
                     addPhotoToModal(newProject);
@@ -193,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
         populateCategorySelect(categories);
     }
 
-    // Charger les catégories et projets depuis l'API ou le stockage local
     function loadProjectsFromLocalStorage() {
         const storedProjects = localStorage.getItem('projects');
         if (storedProjects) {
@@ -276,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function createCategoryButtons(categories) {
-        categoryButtonsContainer.innerHTML = ''; // Clear previous buttons
+        categoryButtonsContainer.innerHTML = '';
         const allButton = document.createElement('button');
         allButton.type = 'button';
         allButton.className = 'btn-filter active';
@@ -296,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateCategorySelect(categories) {
         const categorySelect = document.getElementById('pet-select');
-        categorySelect.innerHTML = ''; // Clear previous options
+        categorySelect.innerHTML = '';
         categories.forEach(category => {
             const option = document.createElement('option');
             option.value = category.id;
@@ -363,26 +360,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            console.log("La réponse de ma suppresion : " + response);
+            if (response.ok) {
+                const projectIndex = projects.findIndex(project => project.id === photoId);
+                if (projectIndex !== -1) {
+                    projects.splice(projectIndex, 1);
+                }
+                displayProjects(projects);
+                displayPhotosInModal(projects);
 
-            const projectIndex = projects.findIndex(project => project.id === photoId);
-            if (projectIndex !== -1) {
-                projects.splice(projectIndex, 1);
-            }
-            displayProjects(projects);
-            displayPhotosInModal(projects);
+                const projectElement = document.getElementById(`project-${photoId}`);
+                if (projectElement) {
+                    projectElement.remove();
+                }
 
-            const projectElement = document.getElementById(`project-${photoId}`);
-            if (projectElement) {
-                projectElement.remove();
-            }
-
-            const photoElement = document.getElementById(`photo-${photoId}`);
-            if (photoElement) {
-                photoElement.remove();
+                const photoElement = document.getElementById(`photo-${photoId}`);
+                if (photoElement) {
+                    photoElement.remove();
+                }
+            } else {
+                console.error('Erreur lors de la suppression de la photo :', response.status);
             }
         } catch (error) {
-            console.error('Erreur lors de la suppression de la photo:', error);
+            console.error('Erreur lors de la suppression de la photo :', error);
         }
     }
 
