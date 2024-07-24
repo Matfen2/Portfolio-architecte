@@ -1,19 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const apiURL = 'http://localhost:5678/api/works';
-    const apiCategoriesURL = 'http://localhost:5678/api/categories';
+    const token = localStorage.getItem('token'); // Récupération du token depuis le localStorage
+    const apiURL = 'http://localhost:5678/api/works'; // URL de l'API pour les projets
+    const apiCategoriesURL = 'http://localhost:5678/api/categories'; // URL de l'API pour les catégories
 
-    const gallery = document.querySelector('.gallery');
-    const categoryButtonsContainer = document.getElementById('category-buttons');
-    const openModal = document.querySelector('.open-modal');
+    const gallery = document.querySelector('.gallery'); // Sélection de l'élément de la galerie
+    const categoryButtonsContainer = document.getElementById('category-buttons'); // Sélection du conteneur des boutons de catégorie
+    const openModal = document.querySelector('.open-modal'); // Sélection du bouton pour ouvrir le modal
 
     let projects = [];
     let categories = [];
 
     if (token) {
-        loadPhotoModalHTML();
+        loadPhotoModalHTML(); // Charger le HTML du modal si un token est présent
     }
 
+    // Fonction pour charger le HTML du modal
     function loadPhotoModalHTML() {
         const modalHTML = `
             <aside class="modal" id="photoModal" aria-hidden="true" style="display: none;">
@@ -44,15 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="modal-body" id="contentAdd">
                             <h2 class="gallery-title">Ajout photo</h2>
-                            <div class="upload-placeholder">
+                            <div class="upload-placeholder" id="uploadPlaceholder">
                                 <div id="photoPreview" class="photo-preview" style="display: none;">
                                     <img id="photoPreviewImg" src="" alt="Prévisualisation" style="max-width: 100%; max-height: 200px; display: block; margin: auto;" />
                                 </div>
                                 <button type="button" id="getPhoto" class="upload-button">
-                                    <span class="upload-text">+ Ajouter photo</span>
+                                    <i class="fa-regular fa-image"></i>
+                                    <h2 class="upload-text">+ Ajouter photo</h2>
+                                    <input type="file" id="photoInput" accept="image/jpeg, image/png" style="display: none;" />
+                                    <small class="typePhoto">jpg, png : 4mo max</small>
                                 </button>
-                                <input type="file" id="photoInput" accept="image/jpeg, image/png" style="display: none;" />
-                                <small class="typePhoto">jpg, png : 4mo max</small>
                             </div>
                             <form id="postPhoto" class="add-photo-form">
                                 <div class="photoTitle">
@@ -65,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <!-- Options will be populated dynamically -->
                                     </select>
                                 </div>
+                                <hr class="rowValid">
                                 <button type="submit" id="btnValidPhoto" class="btn btn-primary">Valider</button>
                             </form>
                         </div>
@@ -73,58 +76,63 @@ document.addEventListener('DOMContentLoaded', () => {
             </aside>
         `;
 
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        addEventListenersToModal();
+        document.body.insertAdjacentHTML('beforeend', modalHTML); // Insertion du modal HTML dans le corps du document
+        addEventListenersToModal(); // Ajouter les écouteurs d'événements au modal
     }
 
+    // Fonction pour ajouter des écouteurs d'événements au modal
     function addEventListenersToModal() {
-        const showModal = document.getElementById('photoModal');
-        const showPhoto = document.getElementById('addPhotoView');
-        const btnPhoto = document.getElementById('btnAddPhotoView');
-        const closeShow = document.getElementById('btnCloseModal');
-        const closeShow2 = document.getElementById('btnCloseModal2');
-        const backToGallery = document.getElementById('btnBackToGallery');
-        const postPhotoForm = document.getElementById('postPhoto');
-        const imageInput = document.getElementById('photoInput');
-        const photoPreview = document.getElementById('photoPreview');
-        const photoPreviewImg = document.getElementById('photoPreviewImg');
+        const showModal = document.getElementById('photoModal'); // Sélection du modal
+        const showPhoto = document.getElementById('addPhotoView'); // Sélection de la vue d'ajout de photo
+        const btnPhoto = document.getElementById('btnAddPhotoView'); // Sélection du bouton pour ajouter une photo
+        const closeShow = document.getElementById('btnCloseModal'); // Sélection du bouton pour fermer le modal
+        const closeShow2 = document.getElementById('btnCloseModal2'); // Sélection du deuxième bouton pour fermer le modal
+        const backToGallery = document.getElementById('btnBackToGallery'); // Sélection du bouton pour revenir à la galerie
+        const postPhotoForm = document.getElementById('postPhoto'); // Sélection du formulaire d'ajout de photo
+        const imageInput = document.getElementById('photoInput'); // Sélection de l'input de fichier
+        const photoPreview = document.getElementById('photoPreview'); // Sélection de l'élément de prévisualisation de la photo
+        const photoPreviewImg = document.getElementById('photoPreviewImg'); // Sélection de l'image de prévisualisation
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder'); // Sélection de l'élément de remplacement
+        const uploadButtonIcon = document.querySelector('.upload-button i'); // Sélection de l'icône du bouton de téléchargement
+        const uploadText = document.querySelector('.upload-text'); // Sélection du texte du bouton de téléchargement
+        const typePhotoText = document.querySelector('.typePhoto'); // Sélection du texte de type de photo
 
         openModal.addEventListener('click', () => {
-            showModal.style.display = "flex";
+            showModal.style.display = "flex"; // Afficher le modal
         });
 
         btnPhoto.addEventListener('click', () => {
             document.getElementById('galleryView').style.display = 'none';
-            showPhoto.style.display = "block";
+            showPhoto.style.display = "block"; // Afficher la vue d'ajout de photo
         });
 
         closeShow.addEventListener('click', () => {
-            showModal.style.display = "none";
+            showModal.style.display = "none"; // Fermer le modal
             document.getElementById('galleryView').style.display = 'block';
             showPhoto.style.display = "none";
         });
 
         closeShow2.addEventListener('click', () => {
-            showPhoto.style.display = "none";
+            showPhoto.style.display = "none"; // Fermer la vue d'ajout de photo
             showModal.style.display = "none";
             document.getElementById('galleryView').style.display = 'block';
         });
 
         window.addEventListener('click', event => {
             if (event.target === showModal) {
-                showModal.style.display = "none";
+                showModal.style.display = "none"; // Fermer le modal si on clique en dehors
                 document.getElementById('galleryView').style.display = 'block';
                 showPhoto.style.display = "none";
             }
         });
 
         backToGallery.addEventListener('click', () => {
-            showPhoto.style.display = 'none';
+            showPhoto.style.display = 'none'; // Revenir à la galerie
             document.getElementById('galleryView').style.display = 'block';
         });
 
         document.getElementById('getPhoto').addEventListener('click', () => {
-            imageInput.click();
+            imageInput.click(); // Simuler un clic sur l'input de fichier
         });
 
         imageInput.addEventListener('change', function () {
@@ -133,22 +141,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     photoPreviewImg.src = e.target.result;
-                    photoPreview.style.display = 'block';
+                    photoPreview.style.display = 'block'; // Afficher la prévisualisation de l'image
+                    uploadButtonIcon.style.display = 'none'; // Masquer l'icône du bouton de téléchargement
+                    uploadText.style.display = 'none'; // Masquer le texte du bouton de téléchargement
+                    typePhotoText.style.display = 'none'; // Masquer le texte de type de photo
+
+                    // Afficher l'image dans .upload-placeholder
+                    uploadPlaceholder.innerHTML = `<img src="${e.target.result}" alt="Prévisualisation" style="max-width: 100%; max-height: 200px; display: block; margin: auto;" />`;
                 };
-                reader.readAsDataURL(file);
-                document.querySelector('.upload-text').textContent = file.name;
+                reader.readAsDataURL(file); // Lire le fichier comme une URL de données
             }
         });
 
         postPhotoForm.addEventListener('submit', async function (event) {
-            event.preventDefault();
+            event.preventDefault(); // Empêcher l'envoi par défaut du formulaire
 
-            const title = document.getElementById('title').value.trim();
-            const category = document.getElementById('pet-select').value;
-            const file = imageInput.files[0];
+            const title = document.getElementById('title').value.trim(); // Récupérer le titre
+            const category = document.getElementById('pet-select').value; // Récupérer la catégorie
+            const file = imageInput.files[0]; // Récupérer le fichier sélectionné
 
             if (!file) {
-                alert("Veuillez sélectionner une image.");
+                alert("Veuillez sélectionner une image."); // Alerter si aucun fichier n'est sélectionné
                 return;
             }
 
@@ -168,14 +181,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     const newProject = await response.json();
-                    projects.push(newProject);
-                    localStorage.setItem('projects', JSON.stringify(projects));
+                    projects.push(newProject); // Ajouter le nouveau projet à la liste des projets
+                    localStorage.setItem('projects', JSON.stringify(projects)); // Stocker les projets dans le localStorage
 
-                    addProjectToGallery(newProject);
-                    addPhotoToModal(newProject);
+                    addProjectToGallery(newProject); // Ajouter le projet à la galerie
+                    addPhotoToModal(newProject); // Ajouter la photo au modal
 
-                    resetModal();
-                    postPhotoForm.reset();
+                    resetModal(); // Réinitialiser le modal
+                    postPhotoForm.reset(); // Réinitialiser le formulaire
 
                     alert("Ajout d'un nouveau projet réussi");
                 } else {
@@ -188,46 +201,46 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        populateCategorySelect(categories);
+        populateCategorySelect(categories); // Remplir le sélecteur de catégories
     }
 
     function loadProjectsFromLocalStorage() {
-        const storedProjects = localStorage.getItem('projects');
+        const storedProjects = localStorage.getItem('projects'); // Récupérer les projets du localStorage
         if (storedProjects) {
             projects = JSON.parse(storedProjects);
-            displayProjects(projects);
-            displayPhotosInModal(projects);
+            displayProjects(projects); // Afficher les projets
+            displayPhotosInModal(projects); // Afficher les photos dans le modal
         } else {
-            fetchProjects();
+            fetchProjects(); // Récupérer les projets depuis l'API
         }
     }
 
     function loadCategoriesFromLocalStorage() {
-        const storedCategories = localStorage.getItem('categories');
+        const storedCategories = localStorage.getItem('categories'); // Récupérer les catégories du localStorage
         if (storedCategories) {
             categories = JSON.parse(storedCategories);
-            createCategoryButtons(categories);
+            createCategoryButtons(categories); // Créer les boutons de catégorie
             if (token) {
-                populateCategorySelect(categories);
+                populateCategorySelect(categories); // Remplir le sélecteur de catégories
             }
         } else {
-            fetchCategories();
+            fetchCategories(); // Récupérer les catégories depuis l'API
         }
     }
 
-    loadProjectsFromLocalStorage();
-    loadCategoriesFromLocalStorage();
+    loadProjectsFromLocalStorage(); // Charger les projets depuis le localStorage
+    loadCategoriesFromLocalStorage(); // Charger les catégories depuis le localStorage
 
     async function fetchProjects() {
         try {
             const response = await fetch(apiURL);
             const data = await response.json();
             projects = data;
-            localStorage.setItem('projects', JSON.stringify(projects));
+            localStorage.setItem('projects', JSON.stringify(projects)); // Stocker les projets dans le localStorage
 
-            displayProjects(projects);
-            displayPhotosInModal(projects);
-            attachDeleteEventListeners();
+            displayProjects(projects); // Afficher les projets
+            displayPhotosInModal(projects); // Afficher les photos dans le modal
+            attachDeleteEventListenersToModal(); // Ajouter les écouteurs d'événements de suppression aux photos du modal
         } catch (error) {
             console.error('Erreur lors de la récupération des projets :', error);
         }
@@ -238,11 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(apiCategoriesURL);
             const data = await response.json();
             categories = data;
-            localStorage.setItem('categories', JSON.stringify(categories));
+            localStorage.setItem('categories', JSON.stringify(categories)); // Stocker les catégories dans le localStorage
 
-            createCategoryButtons(categories);
+            createCategoryButtons(categories); // Créer les boutons de catégorie
             if (token) {
-                populateCategorySelect(categories);
+                populateCategorySelect(categories); // Remplir le sélecteur de catégories
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des catégories :', error);
@@ -253,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery.innerHTML = '';
         projects.forEach(project => {
             const projectElement = createProjectElement(project);
-            gallery.appendChild(projectElement);
+            gallery.appendChild(projectElement); // Ajouter chaque projet à la galerie
         });
     }
 
@@ -264,19 +277,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = document.createElement('img');
         img.src = project.imageUrl;
         img.alt = project.title;
-        img.classList.add('gallery-image');  // Ajout de classe pour uniformiser la hauteur
+        img.classList.add('gallery-image'); // Ajouter une classe pour uniformiser la hauteur des images
         figure.appendChild(img);
 
         const figcaption = document.createElement('figcaption');
         figcaption.textContent = project.title;
         figure.appendChild(figcaption);
-
-        const btnDelete = document.createElement('button');
-        btnDelete.type = 'button';
-        btnDelete.className = 'btn-delete';
-        btnDelete.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-        btnDelete.addEventListener('click', () => deletePhoto(project.id));
-        figure.appendChild(btnDelete);
 
         return figure;
     }
@@ -287,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         allButton.type = 'button';
         allButton.className = 'btn-filter active';
         allButton.textContent = 'Tous';
-        allButton.addEventListener('click', () => filterProjectsByCategory(null));
+        allButton.addEventListener('click', () => filterProjectsByCategory(null)); // Ajouter un écouteur d'événement pour filtrer les projets
         categoryButtonsContainer.appendChild(allButton);
 
         categories.forEach(category => {
@@ -296,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.className = 'btn-filter';
             button.textContent = category.name;
             button.dataset.id = category.id;
-            button.addEventListener('click', () => filterProjectsByCategory(category.id));
+            button.addEventListener('click', () => filterProjectsByCategory(category.id)); // Ajouter un écouteur d'événement pour filtrer les projets par catégorie
             categoryButtonsContainer.appendChild(button);
         });
     }
@@ -308,21 +314,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const option = document.createElement('option');
             option.value = category.id;
             option.textContent = category.name;
-            categorySelect.appendChild(option);
+            categorySelect.appendChild(option); // Ajouter chaque catégorie au sélecteur de catégories
         });
     }
 
     function filterProjectsByCategory(categoryId) {
         const buttons = document.querySelectorAll('.btn-filter');
-        buttons.forEach(button => button.classList.remove('active'));
+        buttons.forEach(button => button.classList.remove('active')); // Retirer la classe active de tous les boutons
 
         const activeButton = categoryId === null ? buttons[0] : Array.from(buttons).find(button => button.dataset.id == categoryId);
-        if (activeButton) activeButton.classList.add('active');
+        if (activeButton) activeButton.classList.add('active'); // Ajouter la classe active au bouton sélectionné
 
         const filteredProjects = categoryId === null ? projects : projects.filter(project => project.categoryId == categoryId);
 
-        displayProjects(filteredProjects);
-        attachDeleteEventListeners();  // Re-attach event listeners to delete buttons
+        displayProjects(filteredProjects); // Afficher les projets filtrés
     }
 
     function createPhotoElement(project) {
@@ -340,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnDelete.type = 'button';
         btnDelete.className = 'btn-delete';
         btnDelete.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-        btnDelete.addEventListener('click', () => deletePhoto(project.id));
+        btnDelete.addEventListener('click', () => deletePhoto(project.id)); // Ajouter un écouteur d'événement pour supprimer la photo
         photoContainer.appendChild(btnDelete);
 
         return photoContainer;
@@ -354,18 +359,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (index % 5 === 0) {
                 row = document.createElement('div');
                 row.className = 'row';
-                listGallery.appendChild(row);
+                listGallery.appendChild(row); // Ajouter une nouvelle ligne tous les 5 projets
             }
             const photoElement = createPhotoElement(project);
-            row.appendChild(photoElement);
+            row.appendChild(photoElement); // Ajouter chaque photo à la ligne
         });
     }
 
-    function attachDeleteEventListeners() {
-        const deleteButtons = document.querySelectorAll('.btn-delete');
+    function attachDeleteEventListenersToModal() {
+        const deleteButtons = document.querySelectorAll('.photo-container .btn-delete');
         deleteButtons.forEach(button => {
             const projectId = button.parentElement.id.split('-')[1];
-            button.addEventListener('click', () => deletePhoto(projectId));
+            button.addEventListener('click', () => deletePhoto(projectId)); // Ajouter un écouteur d'événement de suppression à chaque bouton de suppression
         });
     }
 
@@ -382,17 +387,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const projectIndex = projects.findIndex(project => project.id === photoId);
                 if (projectIndex !== -1) {
-                    projects.splice(projectIndex, 1);
+                    projects.splice(projectIndex, 1); // Supprimer le projet de la liste des projets
                 }
 
                 const projectElement = document.getElementById(`project-${photoId}`);
                 if (projectElement) {
-                    projectElement.remove();
+                    projectElement.remove(); // Supprimer l'élément du DOM
                 }
 
                 const photoElement = document.getElementById(`photo-${photoId}`);
                 if (photoElement) {
-                    photoElement.remove();
+                    photoElement.remove(); // Supprimer l'élément du DOM
                 }
             } else {
                 console.error('Erreur lors de la suppression de la photo :', response.status);
@@ -404,10 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addProjectToGallery(project) {
         const projectElement = createProjectElement(project);
-        gallery.appendChild(projectElement);
+        gallery.appendChild(projectElement); // Ajouter le projet à la galerie
 
-        addPhotoToModal(project);
-        attachDeleteEventListeners();
+        addPhotoToModal(project); // Ajouter la photo au modal
     }
 
     function addPhotoToModal(project) {
@@ -417,10 +421,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!row || photosInRow >= 5) {
             row = document.createElement('div');
             row.className = 'row';
-            listGallery.appendChild(row);
+            listGallery.appendChild(row); // Ajouter une nouvelle ligne tous les 5 projets
         }
         const photoElement = createPhotoElement(project);
-        row.appendChild(photoElement);
+        row.appendChild(photoElement); // Ajouter chaque photo à la ligne
     }
 
     function resetModal() {
@@ -428,8 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const showPhoto = document.getElementById('addPhotoView');
         const galleryView = document.getElementById('galleryView');
 
-        showPhoto.style.display = 'none';
-        galleryView.style.display = 'block';
-        showModal.style.display = 'none';
+        showPhoto.style.display = 'none'; // Masquer la vue d'ajout de photo
+        galleryView.style.display = 'block'; // Afficher la vue de la galerie
+        showModal.style.display = 'none'; // Fermer le modal
     }
 });
