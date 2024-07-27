@@ -240,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             displayProjects(projects); // Afficher les projets
             displayPhotosInModal(projects); // Afficher les photos dans le modal
-            attachDeleteEventListenersToModal(); // Ajouter les écouteurs d'événements de suppression aux photos du modal
         } catch (error) {
             console.error('Erreur lors de la récupération des projets :', error);
         }
@@ -366,14 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function attachDeleteEventListenersToModal() {
-        const deleteButtons = document.querySelectorAll('.photo-container .btn-delete');
-        deleteButtons.forEach(button => {
-            const projectId = button.parentElement.id.split('-')[1];
-            button.addEventListener('click', () => deletePhoto(projectId)); // Ajouter un écouteur d'événement de suppression à chaque bouton de suppression
-        });
-    }
-
     async function deletePhoto(photoId) {
         try {
             const response = await fetch(`http://localhost:5678/api/works/${photoId}`, {
@@ -388,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const projectIndex = projects.findIndex(project => project.id === photoId);
                 if (projectIndex !== -1) {
                     projects.splice(projectIndex, 1); // Supprimer le projet de la liste des projets
+                    localStorage.setItem('projects', JSON.stringify(projects)); // Mettre à jour les projets dans le localStorage
                 }
 
                 const projectElement = document.getElementById(`project-${photoId}`);
