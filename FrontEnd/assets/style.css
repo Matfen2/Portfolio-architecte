@@ -47,6 +47,31 @@ table {
 	border-spacing: 0;
 }
 /** end reset css**/
+.black-banner {
+	padding: 15px;
+	column-gap: 6px;
+	text-align: center;
+	margin-bottom: -10px;
+	flex-direction: row;
+	justify-content: center;
+	background-color: black;
+}
+
+.editify i {
+	color: azure;
+	cursor: pointer;
+	font-size: 1.2em;
+  margin-right: 5px;
+	transition: all 0.3s ease;
+	&:hover {
+		transform: scale(1.1);
+	}
+}
+
+.edition {
+	color: azure;
+}
+
 body {
 	max-width: 1140px;
 	margin:auto;
