@@ -139,6 +139,10 @@ nav li {
 	text-decoration: none;
 }
 
+.nav-item:hover {
+	font-weight: bold;
+}
+
 li:hover {
 	color: #B1663C;
 }
@@ -182,7 +186,12 @@ li:hover {
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
-	color: #1D6154
+	color: #1D6154;
+}
+
+.listBtnFilter {
+	padding-top: 15px;
+	justify-content: center;
 }
 
 .modify {
@@ -257,10 +266,11 @@ li:hover {
 button#btnConnect {
 	padding: 8px;
 	border: none;
-	width: 170px;
+	width: 210px;
 	display: block;
 	margin: 10px auto;
 	border-radius: 5px;
+	font-family: 'Syne';
 	background-color: darkgreen;
 	color: white;
 	font-size: 1.2em;
@@ -269,7 +279,7 @@ button#btnConnect {
 }
 
 button#btnConnect:hover {
-	background-color: green;
+	background-color: rgb(0, 0, 0);
 }
 
 .passwordForget {
@@ -293,6 +303,7 @@ button#btnConnect:hover {
 .gallery {
 	width: 100%;
 	display: grid;
+	margin-top: 38px;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-column-gap: 20px;
 	grid-row-gap: 20px;
@@ -313,7 +324,7 @@ button#btnConnect:hover {
   border: 1px solid darkgreen;
   background-color: #ffffff;
   cursor: pointer; 
-  margin: 5px;
+  margin: 0px;
 }
 
 .btn-filter:active {
@@ -348,6 +359,10 @@ button#btnConnect:hover {
 	color: #1D6154
 }
 
+#contact p {
+	margin-bottom: -10px;
+}
+
 #contact form {
 	text-align: left;
 	margin-top: 16px;
@@ -371,15 +386,20 @@ button#btnConnect:hover {
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 
-input[type="submit"]{
+input[type="submit"] {
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
 	background-color: #1D6154;
 	margin : 2em auto ;
-	width: 180px;
+	width: 220px;
+	cursor: pointer;
 	text-align: center;
 	border-radius: 60px ;
+}
+
+input[type="submit"]:hover {
+	background-color: black;
 }
 
 footer nav ul {
@@ -448,7 +468,7 @@ footer nav ul {
 	margin: 30px auto;
   justify-content: flex-start;
   gap: 10px;
-	margin-left: 50px;
+	margin-left: 35px;
 }
 
 .photo-container {
