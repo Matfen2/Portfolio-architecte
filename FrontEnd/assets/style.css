@@ -195,7 +195,8 @@ li:hover {
 }
 
 .modify {
-	margin-top: -35px;
+	margin-left: 12px;
+	margin-top: -30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -468,7 +469,7 @@ footer nav ul {
 	margin: 30px auto;
   justify-content: flex-start;
   gap: 10px;
-	margin-left: 35px;
+	margin-left: 59px;
 }
 
 .photo-container {
@@ -479,6 +480,7 @@ footer nav ul {
 .photo-container img {
   height: 100px;
   width: 80px;
+	margin: -2px -5px;
 	padding: 10px 5px;
   object-fit: cover;
 }
@@ -489,8 +491,8 @@ footer nav ul {
 
 .btn-delete {
   position: absolute;
-  top: 14px;
-  right: 11px;
+  top: 13px;
+  right: 4px;
   width: 20px;
   height: 20px;
   border-radius: 5px;
@@ -562,9 +564,11 @@ footer nav ul {
 }
 
 .upload-button .upload-text {
-	padding: 10px 39px;
-  font-size: 1.1em;
+	padding: 10px 36px;
+  font-size: 1.0em;
 	margin-top: 10px;
+	color: rgb(17, 102, 221);
+	font-family: "Syne";
 	border-radius: 20px;
 	background-color: #989898;
 	border: 0px solid black;
@@ -627,7 +631,7 @@ footer nav ul {
 }
 
 #btnValidPhoto:hover {
-    background-color: #3d3d3d;
+    background-color: #1D6154;
 }
 
 

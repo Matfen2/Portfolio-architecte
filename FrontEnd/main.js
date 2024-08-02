@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     uploadText.style.display = 'none';
                     typePhotoText.style.display = 'none';
 
-                    uploadPlaceholder.innerHTML = `<img src="${e.target.result}" alt="Prévisualisation" style="max-width: 100%; max-height: 200px; display: block; margin: auto;" />`;
+                    uploadPlaceholder.innerHTML = `<img src="${e.target.result}" alt="Prévisualisation" style="width: 200px; height: 200px; display: block; margin: auto;" />`;
                 };
                 reader.readAsDataURL(file);
             }
