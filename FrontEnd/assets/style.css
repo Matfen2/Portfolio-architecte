@@ -86,6 +86,7 @@ header {
 }
 
 .hrefSite {
+	margin-left: 10px;
 	cursor: pointer;
 	text-decoration: none;
 	&:hover {
@@ -257,7 +258,7 @@ li:hover {
 }
 
 #adress, #password {
-	width: 100%;
+	width: 90%;
 	padding: 15px;
 	margin-top: 5px;
 	border: 1px solid #ccc;
@@ -393,7 +394,7 @@ input[type="submit"] {
 	color: white;
 	background-color: #1D6154;
 	margin : 2em auto ;
-	width: 220px;
+	width: 180px;
 	cursor: pointer;
 	text-align: center;
 	border-radius: 60px ;
@@ -467,6 +468,8 @@ footer nav ul {
   display: flex;
   flex-wrap: wrap;
 	margin: 30px auto;
+	overflow: scroll;
+	height: 390px;
   justify-content: flex-start;
   gap: 10px;
 	margin-left: 59px;
@@ -634,7 +637,106 @@ footer nav ul {
     background-color: #1D6154;
 }
 
+@media (max-width: 768px) {
 
 
 
 
+	.myProjets {
+		margin-bottom: -30px;
+	}
+
+	.listBtnFilter {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.listBtnFilter button {
+		margin-top: 18px;
+	}
+
+	.modal-content {
+		width: 70%;
+	}
+
+	#listGallery {
+		margin-left: 40px;
+	}
+}
+
+@media (max-width: 492px) {
+	.hrefSite h1 {
+		font-size: 1.1em;
+	}
+
+	nav ul {
+		column-gap: 0px;
+		margin-right: 0px;
+	}
+
+	ul .nav-item {
+		font-size: 0.8em;
+	}
+}
+
+@media (max-width: 425px) {
+	figure img {
+		height: 270px;
+		object-fit: cover;
+	}
+
+	article p {
+		font-size: 0.8em;
+	}
+
+	.gallery img {
+		height: 210px;
+		object-fit: cover;
+	}
+
+	.gallery figcaption {
+		font-size: 0.8em;
+	}
+
+	#connection {
+		max-width: 350px;
+	}
+
+	.listGallery {
+		width: 70%;
+	}
+}
+
+@media (max-width: 375px) {
+	.modal {
+		height: 120vh;
+	}
+
+	nav {
+		margin-right: 10px;
+	}
+
+	nav .nav-item {
+		font-size: 0.7em;
+	}
+
+	#instagram {
+		height: 20px;
+	}
+
+	.modal-content {
+		width: 70%;
+		max-width: 320px;
+	}
+}
+
+@media (max-width: 320px) {
+	input[type="submit"] {
+		width: 160px;
+	}
+
+	#connection {
+		max-width: 280px;
+		left: 52%;
+	}
+}

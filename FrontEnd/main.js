@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryButtonsContainer = document.getElementById('category-buttons');
 
     let projects = [];
-    let categories = new Set(); // Utilisation d'un Set pour garantir l'unicité des catégories
+    let categories = new Set(); // Utilisation d'un Set pour garantir l'unicité (= cohésion) des catégories
     let categoriesLoaded = false; // Variable pour suivre si les boutons de catégories ont été créés
 
     // Vérifie si l'utilisateur est connecté et exécute les fonctions appropriées
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     uploadText.style.display = 'none';
                     typePhotoText.style.display = 'none';
 
-                    uploadPlaceholder.innerHTML = `<img src="${e.target.result}" alt="Prévisualisation" style="width: 200px; height: 200px; display: block; margin: auto;" />`;
+                    uploadPlaceholder.innerHTML = `<img src="${e.target.result}" alt="Prévisualisation" style="width: 40%; height: 200px; display: block; margin: auto; object-fit: cover" />`;
                 };
                 reader.readAsDataURL(file);
             }
