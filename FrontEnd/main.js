@@ -177,36 +177,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction asynchrone pour supprimer une photo
     async function deletePhoto(photoId) {
-        try {
-            const response = await fetch(`http://localhost:5678/api/works/${photoId}`, {
-                method: 'DELETE',
+    try {
+        // Récupère l'objet projet correspondant pour obtenir l'URL de l'image
+        const project = projects.find(project => project.id === photoId);
+        if (!project) {
+            console.error('Projet non trouvé');
+            return;
+        }
+
+        // Supprimer le projet de l'API
+        const response = await fetch(`http://localhost:5678/api/works/${photoId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            // Supprimer l'élément du DOM
+            const projectElement = document.getElementById(`project-${photoId}`);
+            if (projectElement) {
+                projectElement.remove();
+            }
+
+            const photoElement = document.getElementById(`photo-${photoId}`);
+            if (photoElement) {
+                photoElement.remove();
+            }
+
+            // Supprimer l'élément de la liste des projets
+            projects = projects.filter(project => project.id !== photoId);
+
+            // Extraire le nom du fichier image à partir de l'URL de l'image
+            const imageUrl = project.imageUrl;
+            const imageName = imageUrl.split('/').pop(); // Extraction du nom de fichier de l'image
+
+            // Envoyer une requête pour supprimer l'image correspondante du serveur
+            const deleteImageResponse = await fetch(`http://localhost:5678/api/delete-image`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
-                }
+                },
+                body: JSON.stringify({ imageName }) // Envoyer le nom du fichier image au backend
             });
 
-            if (response.ok) {
-                // Supprimer l'élément du DOM
-                const projectElement = document.getElementById(`project-${photoId}`);
-                if (projectElement) {
-                    projectElement.remove();
-                }
-
-                const photoElement = document.getElementById(`photo-${photoId}`);
-                if (photoElement) {
-                    photoElement.remove();
-                }
-
-                // Supprimer l'élément de la liste des projets
-                projects = projects.filter(project => project.id !== photoId);
+            if (deleteImageResponse.ok) {
+                console.log('Image supprimée avec succès du serveur');
             } else {
-                console.error('Erreur lors de la suppression de la photo :', response.status);
+                console.error('Erreur lors de la suppression de l\'image :', deleteImageResponse.status);
             }
-        } catch (error) {
-            console.error('Erreur lors de la suppression de la photo :', error);
+
+        } else {
+            console.error('Erreur lors de la suppression de la photo :', response.status);
         }
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la photo :', error);
     }
+}
+
+
+
 
     // Fonction pour ajouter un projet à la galerie
     function addProjectToGallery(project) {
@@ -391,51 +423,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Écouteur d'événements pour soumettre le formulaire d'ajout de photo
         postPhotoForm.addEventListener('submit', async function (event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            const title = document.getElementById('title').value.trim();
-            const category = document.getElementById('pet-select').value;
-            const file = imageInput.files[0];
+    const title = document.getElementById('title').value.trim();
+    const category = document.getElementById('pet-select').value;
+    const file = imageInput.files[0];
 
-            if (!file) {
-                alert("Veuillez sélectionner une image.");
-                return;
-            }
+    if (!file) {
+        alert("Veuillez sélectionner une image.");
+        return;
+    }
 
-            const formData = new FormData();
-            formData.append("image", file);
-            formData.append("title", title);
-            formData.append("category", category);
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("title", title);
+    formData.append("category", category);
 
-            try {
-                const response = await fetch('http://localhost:5678/api/works', {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const newProject = await response.json();
-                    projects.push(newProject);
-
-                    addProjectToGallery(newProject); // Ajoute le nouveau projet à la galerie
-                    addPhotoToModal(newProject); // Ajoute la nouvelle photo au modal
-
-                    resetModal(); // Réinitialise le modal
-                    postPhotoForm.reset(); // Réinitialise le formulaire
-
-                    alert("Ajout d'un nouveau projet réussi");
-                } else {
-                    const errorData = await response.json();
-                    alert(errorData.message || "Une erreur est survenue lors de l'ajout de la photo.");
-                }
-            } catch (error) {
-                console.error("Erreur lors de l'envoi de la requête :", error);
-                alert("Une erreur est survenue lors de l'envoi de la photo.");
-            }
+    try {
+        const response = await fetch('http://localhost:5678/api/works', {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData
         });
+
+        if (response.ok) {
+            const newProject = await response.json();
+            projects.push(newProject);
+
+            addProjectToGallery(newProject); // Ajoute le nouveau projet à la galerie
+            addPhotoToModal(newProject); // Ajoute la nouvelle photo au modal
+
+            resetModal(); // Réinitialise le modal
+            postPhotoForm.reset(); // Réinitialise le formulaire
+
+            // Réinitialisation des autres éléments du modal
+            photoPreview.style.display = 'none'; 
+            uploadButtonIcon.style.display = 'block';
+            uploadText.style.display = 'block';
+            typePhotoText.style.display = 'block';
+
+            alert("Ajout d'un nouveau projet réussi");
+        } else {
+            const errorData = await response.json();
+            alert(errorData.message || "Une erreur est survenue lors de l'ajout de la photo.");
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'envoi de la requête :", error);
+        alert("Une erreur est survenue lors de l'envoi de la photo.");
+    }
+});
+
     }
 
     // Fonction pour cacher les boutons de catégories
