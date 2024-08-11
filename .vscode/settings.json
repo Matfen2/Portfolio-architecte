@@ -1,5 +1,5 @@
 {
-  "liveServer.settings.root": "",
+  "liveServer.settings.root": "/",  
   "liveServer.settings.AdvanceCustomBrowserCmdLine": "",
   "liveServer.settings.ChromeDebuggingAttachment": false,
   "liveServer.settings.ignoreFiles": [
@@ -7,6 +7,7 @@
     ".vscode/**",
     "**/*.scss",
     "**/*.sass",
-    "**/*.ts"
+    "**/*.ts",
+    "**" 
   ]
 }
