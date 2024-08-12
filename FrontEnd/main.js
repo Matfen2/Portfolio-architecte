@@ -1,87 +1,95 @@
 // Ajoute un écouteur d'événements pour exécuter le code une fois que le DOM est entièrement chargé
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const authLink = document.getElementById('auth-link');
-    const modifySection = document.querySelector('.modify');
-    const blackBanner = document.querySelector('.black-banner');
-    const gallery = document.querySelector('.gallery');
-    const categoryButtonsContainer = document.getElementById('category-buttons');
+    const token = localStorage.getItem('token'); // Récupère le token d'authentification depuis le stockage local
+    const authLink = document.getElementById('auth-link'); // Lien pour se connecter ou se déconnecter
+    const modifySection = document.querySelector('.modify'); // Section pour les modifications (visible uniquement pour les utilisateurs connectés)
+    const blackBanner = document.querySelector('.black-banner'); // Bannière noire (visible uniquement pour les utilisateurs connectés)
+    const gallery = document.querySelector('.gallery'); // Section où les projets sont affichés
+    const categoryButtonsContainer = document.getElementById('category-buttons'); // Conteneur pour les boutons de filtrage des catégories
 
-    let projects = [];
-    let categories = new Set();
-    let categoriesLoaded = false;
+    let projects = []; // Tableau pour stocker les projets
+    let categories = new Set(); // Set pour stocker les catégories (garantit l'unicité)
+    let categoriesLoaded = false; // Indicateur pour savoir si les catégories ont déjà été chargées
 
+    // Vérifie si l'utilisateur est connecté et ajuste l'interface en conséquence
     if (token) {
         onLogin();
     } else {
         onLogout();
     }
 
+    // Fonction exécutée lors de la connexion de l'utilisateur
     function onLogin() {
-        authLink.textContent = 'logout';
-        authLink.href = '#';
-        modifySection.style.display = 'flex';
-        modifySection.style.flexDirection = 'row';
-        blackBanner.style.display = 'flex';
-        authLink.addEventListener('click', handleLogout);
-        loadPhotoModalHTML();
-        loadProjectsFromAPI();
-        loadCategoriesFromAPI();
-        hideCategoryButtons();
+        authLink.textContent = 'logout'; // Change le texte du lien d'authentification pour "logout"
+        authLink.href = '#'; // Modifie le lien pour qu'il ne pointe nulle part
+        modifySection.style.display = 'flex'; // Affiche la section de modification
+        modifySection.style.flexDirection = 'row'; // Arrange les éléments en ligne
+        blackBanner.style.display = 'flex'; // Affiche la bannière noire
+        authLink.addEventListener('click', handleLogout); // Ajoute un écouteur pour gérer la déconnexion
+        loadPhotoModalHTML(); // Charge le HTML pour le modal de photos
+        loadProjectsFromAPI(); // Charge les projets depuis l'API
+        loadCategoriesFromAPI(); // Charge les catégories depuis l'API
+        hideCategoryButtons(); // Cache les boutons de catégories
     }
 
+    // Fonction exécutée lors de la déconnexion de l'utilisateur
     function onLogout() {
-        authLink.textContent = 'login';
-        authLink.href = 'login.html';
-        modifySection.style.display = 'none';
-        blackBanner.style.display = 'none';
-        authLink.removeEventListener('click', handleLogout);
-        showCategoryButtons();
-        loadProjectsFromAPI();
+        authLink.textContent = 'login'; // Change le texte du lien d'authentification pour "login"
+        authLink.href = 'login.html'; // Modifie le lien pour qu'il pointe vers la page de connexion
+        modifySection.style.display = 'none'; // Cache la section de modification
+        blackBanner.style.display = 'none'; // Cache la bannière noire
+        authLink.removeEventListener('click', handleLogout); // Retire l'écouteur d'événements pour la déconnexion
+        showCategoryButtons(); // Affiche les boutons de catégories
+        loadProjectsFromAPI(); // Recharge les projets depuis l'API
         if (!categoriesLoaded) {
-            loadCategoriesFromAPI();
+            loadCategoriesFromAPI(); // Charge les catégories si elles ne sont pas encore chargées
         }
     }
 
+    // Fonction pour gérer la déconnexion de l'utilisateur
     function handleLogout(event) {
         event.preventDefault();
-        localStorage.removeItem('token');
-        onLogout();
+        localStorage.removeItem('token'); // Supprime le token d'authentification du stockage local
+        onLogout(); // Exécute la fonction de déconnexion
     }
 
+    // Fonction pour charger les projets depuis l'API
     function loadProjectsFromAPI() {
         fetch('http://localhost:5678/api/works', {
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {} // Ajoute le header d'authentification si l'utilisateur est connecté
         })
         .then(response => response.json())
         .then(data => {
-            projects = data;
-            displayProjects(projects);
-            displayPhotosInModal(projects);
+            projects = data; // Stocke les projets dans la variable `projects`
+            displayProjects(projects); // Affiche les projets dans la galerie
+            displayPhotosInModal(projects); // Affiche les projets dans le modal de gestion des photos
         })
-        .catch(error => console.error('Erreur lors de la récupération des projets :', error));
+        .catch(error => console.error('Erreur lors de la récupération des projets :', error)); // Affiche une erreur en cas de problème
     }
 
+    // Fonction pour charger les catégories depuis l'API
     function loadCategoriesFromAPI() {
         fetch('http://localhost:5678/api/categories')
         .then(response => response.json())
         .then(data => {
-            data.forEach(category => categories.add(category));
-            createCategoryButtons([...categories]);
-            populateCategorySelect([...categories]);
-            categoriesLoaded = true;
+            data.forEach(category => categories.add(category)); // Ajoute chaque catégorie dans le Set
+            createCategoryButtons([...categories]); // Crée les boutons de filtrage pour les catégories
+            populateCategorySelect([...categories]); // Remplit le select des catégories dans le formulaire
+            categoriesLoaded = true; // Marque les catégories comme chargées
         })
-        .catch(error => console.error('Erreur lors de la récupération des catégories :', error));
+        .catch(error => console.error('Erreur lors de la récupération des catégories :', error)); // Affiche une erreur en cas de problème
     }
 
+    // Fonction pour afficher les projets dans la galerie
     function displayProjects(projects) {
-        gallery.innerHTML = '';
+        gallery.innerHTML = ''; // Vide la galerie
         projects.forEach(project => {
-            const projectElement = createProjectElement(project);
-            gallery.appendChild(projectElement);
+            const projectElement = createProjectElement(project); // Crée un élément pour chaque projet
+            gallery.appendChild(projectElement); // Ajoute l'élément à la galerie
         });
     }
 
+    // Fonction pour créer un élément de projet
     function createProjectElement(project) {
         const figure = document.createElement('figure');
         figure.setAttribute('id', `project-${project.id}`);
@@ -99,17 +107,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return figure;
     }
 
+    // Fonction pour afficher les photos dans le modal
     function displayPhotosInModal(projects) {
         const listGallery = document.getElementById('listGallery');
         if (listGallery) {
-            listGallery.innerHTML = '';
+            listGallery.innerHTML = ''; // Vide la liste des photos dans le modal
             projects.forEach(project => {
-                const photoElement = createPhotoElement(project);
-                listGallery.appendChild(photoElement);
+                const photoElement = createPhotoElement(project); // Crée un élément pour chaque photo
+                listGallery.appendChild(photoElement); // Ajoute l'élément à la liste dans le modal
             });
         }
     }
 
+    // Fonction pour créer un élément de photo dans le modal
     function createPhotoElement(project) {
         const photoContainer = document.createElement('div');
         photoContainer.className = 'photo-container';
@@ -125,19 +135,20 @@ document.addEventListener('DOMContentLoaded', () => {
         btnDelete.type = 'button';
         btnDelete.className = 'btn-delete';
         btnDelete.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-        btnDelete.addEventListener('click', () => deletePhoto(project.id));
+        btnDelete.addEventListener('click', () => deletePhoto(project.id)); // Ajoute un écouteur pour supprimer la photo
         photoContainer.appendChild(btnDelete);
 
         return photoContainer;
     }
 
+    // Fonction pour créer les boutons de filtrage des catégories
     function createCategoryButtons(categories) {
-        categoryButtonsContainer.innerHTML = '';
+        categoryButtonsContainer.innerHTML = ''; // Vide le conteneur des boutons de catégories
         const allButton = document.createElement('button');
         allButton.type = 'button';
         allButton.className = 'btn-filter active';
         allButton.textContent = 'Tous';
-        allButton.addEventListener('click', () => filterProjectsByCategory(null));
+        allButton.addEventListener('click', () => filterProjectsByCategory(null)); // Filtre les projets par toutes les catégories
         categoryButtonsContainer.appendChild(allButton);
 
         categories.forEach(category => {
@@ -146,23 +157,25 @@ document.addEventListener('DOMContentLoaded', () => {
             button.className = 'btn-filter';
             button.textContent = category.name;
             button.dataset.id = category.id;
-            button.addEventListener('click', () => filterProjectsByCategory(category.id));
+            button.addEventListener('click', () => filterProjectsByCategory(category.id)); // Filtre les projets par catégorie spécifique
             categoryButtonsContainer.appendChild(button);
         });
     }
 
+    // Fonction pour filtrer les projets par catégorie
     function filterProjectsByCategory(categoryId) {
         const buttons = document.querySelectorAll('.btn-filter');
-        buttons.forEach(button => button.classList.remove('active'));
+        buttons.forEach(button => button.classList.remove('active')); // Retire la classe active de tous les boutons
 
         const activeButton = categoryId === null ? buttons[0] : Array.from(buttons).find(button => button.dataset.id == categoryId);
-        if (activeButton) activeButton.classList.add('active');
+        if (activeButton) activeButton.classList.add('active'); // Ajoute la classe active au bouton correspondant
 
         const filteredProjects = categoryId === null ? projects : projects.filter(project => project.categoryId == categoryId);
 
-        displayProjects(filteredProjects);
+        displayProjects(filteredProjects); // Affiche les projets filtrés
     }
 
+    // Fonction pour supprimer un projet et l'image associée
     async function deletePhoto(photoId) {
         try {
             const response = await fetch(`http://localhost:5678/api/works/${photoId}`, {
@@ -174,6 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
+                console.log('Projet et image supprimés avec succès');
+
+                // Supprime l'élément du DOM
                 const projectElement = document.getElementById(`project-${photoId}`);
                 if (projectElement) {
                     projectElement.remove();
@@ -184,25 +200,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     photoElement.remove();
                 }
 
+                // Met à jour la liste des projets
                 projects = projects.filter(project => project.id !== photoId);
 
                 const newImageInput = document.getElementById('photoInput');
                 if (newImageInput) {
                     newImageInput.value = ''; // Réinitialise la valeur de l'input
                 }
+
+                alert('Projet et image supprimés avec succès');
             } else {
-                console.error('Erreur lors de la suppression de la photo :', response.status);
+                const errorData = await response.json();
+                console.error('Erreur lors de la suppression de la photo :', errorData.message);
+                alert(`Erreur : ${errorData.message}`);
             }
         } catch (error) {
             console.error('Erreur lors de la suppression de la photo :', error);
+            alert(`Erreur lors de la suppression : ${error.message}`);
         }
     }
 
+    // Fonction pour ajouter un projet à la galerie
     function addProjectToGallery(project) {
         const projectElement = createProjectElement(project);
         gallery.appendChild(projectElement);
     }
 
+    // Fonction pour ajouter une photo au modal
     function addPhotoToModal(project) {
         const listGallery = document.getElementById('listGallery');
         if (listGallery) {
@@ -211,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Fonction pour réinitialiser le modal après ajout d'une photo
     function resetModal() {
         const showModal = document.getElementById('photoModal');
         const showPhoto = document.getElementById('addPhotoView');
@@ -244,19 +269,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Fonction pour remplir le select des catégories dans le formulaire d'ajout de photo
     function populateCategorySelect(categories) {
         const categorySelect = document.getElementById('pet-select');
         if (categorySelect) {
-            categorySelect.innerHTML = '';
+            categorySelect.innerHTML = ''; // Vide le select
             categories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.id;
                 option.textContent = category.name;
-                categorySelect.appendChild(option);
+                categorySelect.appendChild(option); // Ajoute chaque option de catégorie
             });
         }
     }
 
+    // Fonction pour charger le HTML du modal de photos
     function loadPhotoModalHTML() {
         const modalHTML = `
             <aside class="modal" id="photoModal" aria-hidden="true" style="display: none;">
@@ -317,9 +344,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHTML);
-        addEventListenersToModal();
+        addEventListenersToModal(); // Ajoute les écouteurs d'événements pour le modal
     }
 
+    // Fonction pour ajouter des écouteurs d'événements au modal
     function addEventListenersToModal() {
         const showModal = document.getElementById('photoModal');
         const showPhoto = document.getElementById('addPhotoView');
@@ -336,11 +364,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const uploadText = document.querySelector('.upload-text');
         const typePhotoText = document.querySelector('.typePhoto');
 
+        // Ouvre le modal
         document.querySelector('.open-modal').addEventListener('click', (event) => {
             event.preventDefault();
             if (showModal) showModal.style.display = "flex";
         });
 
+        // Passe à la vue d'ajout de photo dans le modal
         btnPhoto.addEventListener('click', () => {
             if (showPhoto && galleryView) {
                 galleryView.style.display = 'none';
@@ -348,6 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Ferme le modal depuis la vue galerie
         closeShow.addEventListener('click', () => {
             if (showModal && showPhoto && galleryView) {
                 showModal.style.display = "none";
@@ -356,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Ferme le modal depuis la vue ajout de photo
         closeShow2.addEventListener('click', () => {
             if (showModal && showPhoto && galleryView) {
                 showPhoto.style.display = "none";
@@ -364,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Ferme le modal en cliquant à l'extérieur
         window.addEventListener('click', event => {
             if (event.target === showModal) {
                 if (showModal && showPhoto && galleryView) {
@@ -374,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Retour à la galerie depuis la vue d'ajout de photo
         backToGallery.addEventListener('click', () => {
             if (showPhoto && galleryView) {
                 showPhoto.style.display = 'none';
@@ -381,10 +415,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Déclenche le choix de fichier lors du clic sur le bouton d'ajout de photo
         document.getElementById('getPhoto').addEventListener('click', () => {
             imageInput.click();
         });
 
+        // Affiche la prévisualisation de l'image sélectionnée
         imageInput.addEventListener('change', function () {
             const file = this.files[0];
 
@@ -412,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Soumet le formulaire d'ajout de photo
         postPhotoForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
@@ -458,12 +495,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Fonction pour cacher les boutons de catégories
     function hideCategoryButtons() {
         if (categoryButtonsContainer) {
             categoryButtonsContainer.style.display = 'none';
         }
     }
 
+    // Fonction pour afficher les boutons de catégories
     function showCategoryButtons() {
         if (categoryButtonsContainer) {
             categoryButtonsContainer.style.display = 'flex';
